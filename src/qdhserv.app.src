@@ -1,0 +1,19 @@
+{application, qdhserv,
+ [
+  {description, "Quick and dirty HTTP server"},
+  {vsn, "0.1.0"},
+  {modules, [
+             qdhserv,
+             qdhserv_main,
+             qdhserv_cmdline,
+             qdhserv_types,
+             qdhserv_util,
+             getopt
+            ]},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {env, []}
+ ]}.

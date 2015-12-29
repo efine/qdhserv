@@ -2,9 +2,12 @@
 deps
 *.o
 *.beam
-*.plt
+.*.plt
+.deps_plt
 erl_crash.dump
 ebin
-rel/example_project
+rel/qdhserv
+qdhserv
 .concrete/DEV_MODE
 .rebar
+.*.sw?
