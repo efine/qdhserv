@@ -12,31 +12,21 @@
 
 
 
-### <a name="type-action">action()</a> ###
-
-
-<pre><code>
-action() = atom()
-</code></pre>
-
-
-
-
-### <a name="type-config">config()</a> ###
-
-
-<pre><code>
-config() = <a href="proplists.md#type-proplist">proplists:proplist()</a>
-</code></pre>
-
-
-
-
 ### <a name="type-opt_specs">opt_specs()</a> ###
 
 
 <pre><code>
 opt_specs() = [<a href="getopt.md#type-option_spec">getopt:option_spec()</a>]
+</code></pre>
+
+
+
+
+### <a name="type-options">options()</a> ###
+
+
+<pre><code>
+options() = [<a href="getopt.md#type-option">getopt:option()</a>]
 </code></pre>
 
 <a name="index"></a>
@@ -68,7 +58,7 @@ option_spec_list() -&gt; <a href="#type-opt_specs">opt_specs()</a>
 parse_args(Args) -&gt; Result
 </code></pre>
 
-<ul class="definitions"><li><code>Args = [string()]</code></li><li><code>Result = {ok, {Action, Config}} | {error, ErrorText}</code></li><li><code>Action = atom()</code></li><li><code>Config = <a href="proplists.md#type-proplist">proplists:proplist()</a></code></li><li><code>ErrorText = string()</code></li></ul>
+<ul class="definitions"><li><code>Args = [string()]</code></li><li><code>Result = {ok, {Action, Config}} | {error, ErrorText}</code></li><li><code>Action = <a href="qdhserv_types.md#type-action">qdhserv_types:action()</a></code></li><li><code>Config = <a href="proplists.md#type-proplist">proplists:proplist()</a></code></li><li><code>ErrorText = string()</code></li></ul>
 
 <a name="usage-1"></a>
 

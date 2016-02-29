@@ -1,22 +1,20 @@
+@author Edwin Fine <efine@myfcci.com>
+@copyright 2016 Fine Computer Consultants, Inc.
+@title qdhserv - A Quick and Dirty HTTP Server
 
-
-# qdhserv - A Quick and Dirty HTTP Server #
-
-Copyright (c) 2016 Fine Computer Consultants, Inc.
-
-__Authors:__ Edwin Fine ([`efine@myfcci.com`](mailto:efine@myfcci.com)).
+@doc
 
 Wouldn't it be nice to have a little server utility with which you can
 add and remove served directories? `qdhserv` is a quick and dirty Erlang
-escript which does just that.<p></p>
+escript which does just that.
+
+<p></p>
 <br></br>
-<img src="doc/qdhserv.png" alt="qdhserv`s help page"/>
+<img src="doc/qdhserv.png" alt="qdhserv's help page"/>
 
+== Examples ==
 
-### <a name="Examples">Examples</a> ###
-
-```bash
-
+<pre lang="bash">
 # Start server on doc subdirectory with default port of 33558
 qdhserv --start -d $(pwd)/doc --id 'docs'
 
@@ -29,11 +27,9 @@ $ qdhserv --start --id foobar_logs --port 33559 -d ~/var/log/foobar.log
 
 # Kill all servers
 qdhserv --kill
+</pre>
 
-```
-
-
-### <a name="Rationale">Rationale</a> ###
+== Rationale ==
 
 When you work with a lot of generated documentation that needs a web
 browser to view, and you work across many VMs and the like, so the
@@ -41,8 +37,7 @@ documentation isn't always on your local system, it gets tiring
 
 You could always use Python to do something like this:
 
-```python
-
+<pre lang="python">
 import SimpleHTTPServer
 import SocketServer
 
@@ -54,20 +49,15 @@ httpd = SocketServer.TCPServer(("", PORT), Handler)
 
 print "serving at port", PORT
 httpd.serve_forever()
+</pre>
 
-```
 But after a while, you get a bunch of Python interpreters running on
 different ports and it gets a bit out of hand. Of course, you could
 write a nice Python utility to do better than that, but Erlang's really
 great on multiprocessing. And I like it, so there!
+@end
 
-## Modules ##
-
-
-<table width="100%" border="0" summary="list of modules">
-<tr><td><a href="qdhserv.md" class="module">qdhserv</a></td></tr>
-<tr><td><a href="qdhserv_cmdline.md" class="module">qdhserv_cmdline</a></td></tr>
-<tr><td><a href="qdhserv_main.md" class="module">qdhserv_main</a></td></tr>
-<tr><td><a href="qdhserv_types.md" class="module">qdhserv_types</a></td></tr>
-<tr><td><a href="qdhserv_util.md" class="module">qdhserv_util</a></td></tr></table>
+<!--
+vim: set ft=txt ts=4 sts=4 sw=4 tw=72
+-->
 

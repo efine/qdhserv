@@ -1,8 +1,23 @@
 
 
 # Module qdhserv_main #
+* [Data Types](#types)
 * [Function Index](#index)
 * [Function Details](#functions)
+
+<a name="types"></a>
+
+## Data Types ##
+
+
+
+
+### <a name="type-return_code">return_code()</a> ###
+
+
+<pre><code>
+return_code() = '?RC_SUCCESS' | '?RC_ERROR' | '?RC_FATAL'
+</code></pre>
 
 <a name="index"></a>
 
@@ -21,7 +36,7 @@
 ### main/2 ###
 
 <pre><code>
-main(ScriptName, Args) -&gt; integer()
+main(ScriptName, Args) -&gt; <a href="#type-return_code">return_code()</a>
 </code></pre>
 
 <ul class="definitions"><li><code>ScriptName = string()</code></li><li><code>Args = [string()]</code></li></ul>

@@ -11,3 +11,4 @@ qdhserv
 .concrete/DEV_MODE
 .rebar
 .*.sw?
+doc/edoc-info
