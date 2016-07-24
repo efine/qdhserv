@@ -1,14 +1,9 @@
+_build
 .eunit
-deps
-*.o
 *.beam
 .*.plt
-.deps_plt
 erl_crash.dump
 ebin
-rel/qdhserv
-qdhserv
-.concrete/DEV_MODE
 .rebar
 .*.sw?
 doc/edoc-info

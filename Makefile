@@ -1,11 +1,19 @@
-.PHONY: all compile doc clean test ct dialyzer dialyzer-build-plt typer \
-		shell distclean update-deps clean-common-test-data clean-doc-data \
-		rel install
+.PHONY: all distclean clean info compile doc install
 
-ERLFLAGS= -pa $(CURDIR)/.eunit \
-		  -pa $(CURDIR)/ebin \
-		  -pa $(CURDIR)/deps/*/ebin \
-		  -pa $(CURDIR)/test
+REBAR3_URL = https://s3.amazonaws.com/rebar3/rebar3
+
+# If there is a rebar in the current directory, use it
+ifeq ($(wildcard rebar3),rebar3)
+REBAR = $(CURDIR)/rebar3
+endif
+
+# Fallback to rebar on PATH
+REBAR ?= $(shell which rebar3)
+
+# And finally, prep to download rebar if all else fails
+ifeq ($(REBAR),)
+REBAR = $(CURDIR)/rebar3
+endif
 
 #
 # Check for required packages
@@ -20,103 +28,34 @@ _ := $(foreach pkg,$(REQUIRED_PACKAGES),\
 
 ERLANG_VER=$(shell erl -noinput -eval 'io:put_chars(erlang:system_info(system_version)),halt().')
 
-DEPS_PLT=$(CURDIR)/.deps_plt
-DIALYZER_WARNINGS = -Wunmatched_returns -Werror_handling -Wrace_conditions
-DIALYZER_APPS = erts kernel stdlib
+QDHSERV := _build/default/bin/qdhserv
 
-# Prefer local rebar, if present
+all: compile
 
-ifneq (,$(wildcard ./rebar))
-    REBAR_PGM = `pwd`/rebar
-else
-    REBAR_PGM = rebar
-endif
+$(QDHSERV): src/*
+	$(REBAR) do clean, escriptize
 
-REBAR = $(REBAR_PGM)
-REBAR_VSN := $(shell $(REBAR) --version)
+clean: $(REBAR)
+	$(REBAR) clean --all
 
-all: deps compile dialyzer test
+distclean:
+	@rm -rf _build
 
-info:
+compile: $(QDHSERV)
+
+info: $(REBAR)
 	@echo 'Erlang/OTP system version: $(ERLANG_VER)'
-	@echo '$(REBAR_VSN)'
+	@$(REBAR) --version
 
-compile: info
-	$(REBAR) skip_deps=true compile escriptize
+doc: $(QDHSERV)
+	$(REBAR) edoc
 
-doc:
-	$(REBAR) skip_deps=true doc
-
-deps: info
-	$(REBAR) get-deps
-	$(REBAR) compile
-
-update-deps: info
-	$(REBAR) update-deps
-	$(REBAR) compile
-
-ct:
-	$(REBAR) skip_deps=true ct
-
-test: compile ct
-
-dialyzer: $(DEPS_PLT)
-	dialyzer \
-		--fullpath \
-		--plt $(DEPS_PLT) \
-		$(DIALYZER_WARNINGS) \
-		-r ./ebin
-
-$(DEPS_PLT):
-	@echo Building local plt at $(DEPS_PLT)
-	@echo
-	dialyzer \
-		--build_plt \
-		--output_plt $(DEPS_PLT) \
-		--apps $(DIALYZER_APPS) \
-		-r deps
-
-dialyzer-add-to-plt: $(DEPS_PLT)
-	@echo Adding to local plt at $(DEPS_PLT)
-	@echo
-	dialyzer \
-		--add_to_plt \
-		--plt $(DEPS_PLT) \
-		--output_plt $(DEPS_PLT) \
-		--apps $(DIALYZER_APPS) \
-		-r deps
-
-shell: deps compile
-	@erl $(ERLFLAGS)
-
-typer:
-	typer --plt $(DEPS_PLT) -I ./include -r ./src
-
-clean-common-test-data:
-	- rm -rf $(CURDIR)/test/*.beam
-	- rm -rf $(CURDIR)/logs
-
-#
-# This rule assumes that doc/*.md files are all generated.
-#
-clean-doc-data:
-	- rm -f $(CURDIR)/doc/*.html
-	- rm -f $(CURDIR)/doc/edoc-info
-	- rm -f $(CURDIR)/doc/*.md
-
-clean: clean-common-test-data
-	- rm -rf $(CURDIR)/ebin
-	$(REBAR) skip_deps=true clean
-
-distclean: clean clean-doc-data
-	- rm -rf $(DEPS_PLT)
-	- rm -rvf $(CURDIR)/deps
-
-rel: all
-	$(REBAR) skip_deps=true compile escriptize
-
-install: rel
+install: $(QDHSERV)
 	install -d $(DESTDIR)/usr/local/bin
 	install -m755 $< $(DESTDIR)/usr/local/bin
+
+$(REBAR):
+	curl -s -Lo rebar3 $(REBAR3_URL) || wget $(REBAR3_URL)
+	chmod a+x $(REBAR)
 
 # ex: ts=4 sts=4 sw=4 noet
