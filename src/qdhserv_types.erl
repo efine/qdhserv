@@ -26,7 +26,7 @@
                         nonempty_string().
 
 -type port_range() :: 1..16#FFFF.
--type ipfamily() :: 'inet' | 'inet6' | 'inet6fb4'.
+-type ipfamily() :: 'inet' | 'inet6'.
 
 -type httpd_prop() ::   {'bind_address', bind_address()}
                       | {'directory_index', string()}

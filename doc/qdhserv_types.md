@@ -74,7 +74,7 @@ httpd_prop() = {bind_address, <a href="#type-bind_address">bind_address()</a>} |
 
 
 <pre><code>
-ipfamily() = inet | inet6 | inet6fb4
+ipfamily() = inet | inet6
 </code></pre>
 
 

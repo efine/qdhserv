@@ -35,8 +35,7 @@ option_spec_list() ->
      {directory_index, $I,        "directory-index", {string, "index.html"},  "Comma-separated list of directory index files"},
      {bind_address,    undefined, "bind-address",    {string, "*"},           "Bind address (IP address, hostname, or '*')"},
      {inet6,           $6,        "ipv6",            {boolean, false},        "Listen on IPv6 only"},
-     {inet,            $4,        "ipv4",            {boolean, false},        "Listen on IPv4 only"},
-     {inet6fb4,        undefined, "ipv6fb4",         {boolean, true},         "Listen on IPv6 and fall back to IPv4"}
+     {inet,            $4,        "ipv4",            {boolean, true},         "Listen on IPv4 only"}
     ].
 
 -spec parse_args(Args) -> Result when
@@ -176,11 +175,10 @@ verbose(Opts) ->
 %% @end
 %%--------------------------------------------------------------------
 -spec ipfamily(Opts) -> Result when
-      Opts :: options(), Result :: {ipfamily, inet | inet6 | inet6fb4}.
+      Opts :: options(), Result :: {ipfamily, inet | inet6 }.
 ipfamily(Opts) ->
     lists:foldl(fun({inet,     true}, _  ) -> {ipfamily, inet};
                    ({inet6,    true}, _  ) -> {ipfamily, inet6};
-                   ({inet6fb4, true}, _  ) -> {ipfamily, inet6fb4};
                    (_Any            , Acc) -> Acc
                 end, {ipfamily, inet}, Opts).
 
