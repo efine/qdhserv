@@ -25,6 +25,7 @@
          }).
 
 -type cfgrec() :: #cfg{}.
+-type cfgfun() :: fun(() -> cfgrec()).
 
 %%====================================================================
 %% API
@@ -59,31 +60,42 @@ main(Args) ->
       Result :: cleanup_arg().
 try_run(Action, Config) ->
     try
-        Cfg = mkconfig(Config),
-        qdhserv_util:start_distributed(Cfg#cfg.my_node,
-                                       shortnames),
-        erlang:set_cookie(node(), cookie(Cfg#cfg.my_cfg)),
-        run(Action, Cfg)
+        Init = fun() ->
+                       if_verbose(Config,
+                                  fun() ->
+                                          msg("Config: ~p\n", [Config])
+                                  end),
+                       Cfg = mkconfig(Config),
+                       qdhserv_util:start_distributed(Cfg#cfg.my_node,
+                                                      shortnames),
+                       erlang:set_cookie(node(), cookie(Cfg#cfg.my_cfg)),
+                       Cfg
+               end,
+        run(Action, Init)
     catch
         throw:{ping_timeout, Node} ->
             {?RC_FATAL, "Timed out pinging " ++ to_s(Node)}
     end.
 
--spec run(Action, Cfg) -> Result when
-      Action :: qdhserv_types:action(), Cfg :: cfgrec(),
+-spec run(Action, Init) -> Result when
+      Action :: qdhserv_types:action(), Init :: cfgfun(),
       Result :: cleanup_arg().
-run(action_help, _Cfg) ->
+run(action_help, _Init) ->
     help;
-run(action_default, Cfg) ->
-    run(action_help, Cfg);
-run(action_start, Cfg) ->
+run(action_default, Init) ->
+    run(action_help, Init);
+run(action_start, Init) ->
+    Cfg = Init(),
     start_standalone_node(Cfg#cfg.sa_node, Cfg#cfg.my_cfg),
     start_http_server(Cfg#cfg.sa_node, Cfg#cfg.httpd_cfg);
-run(action_stop, Cfg) ->
+run(action_stop, Init) ->
+    Cfg = Init(),
     stop_http_server(Cfg#cfg.sa_node, Cfg#cfg.httpd_cfg);
-run(action_kill, Cfg) ->
+run(action_kill, Init) ->
+    Cfg = Init(),
     stop_standalone_node(Cfg#cfg.sa_node, Cfg#cfg.my_cfg);
-run(action_list, Cfg) ->
+run(action_list, Init) ->
+    Cfg = Init(),
     list_http_servers(Cfg#cfg.sa_node).
 
 
@@ -95,7 +107,7 @@ cleanup(ScriptName, help) ->
     cleanup(ScriptName, ?RC_ERROR);
 cleanup(ScriptName, {error, Errmsg}) ->
     usage(ScriptName),
-    err_msg("***** ~s~n~n", [Errmsg]),
+    err_msg("***** ~s~n~n", [qdhserv_util:to_s(Errmsg)]),
     cleanup(ScriptName, ?RC_ERROR);
 cleanup(ScriptName, {exception, Class, Reason}) ->
     err_msg("***** ~p:~n~p~n", [Class, Reason]),
@@ -335,4 +347,9 @@ cookie(QdhservCfg) ->
         {_, Cookie} ->
             qdhserv_util:to_a(Cookie)
     end.
+
+if_verbose(Config, Fun) when is_function(Fun, 0) ->
+    QC = proplists:get_value(qdhserv, Config, []),
+    Verbose = proplists:get_value(verbose, QC, false),
+    Verbose andalso mktrue(Fun()).
 
