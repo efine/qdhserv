@@ -279,7 +279,7 @@ short_node_name(Node) ->
 
 -spec random_node_name() -> node().
 random_node_name() ->
-    S = atom_to_list(?MODULE) ++ "_" ++ integer_to_list(random:uniform(1000)),
+    S = atom_to_list(?MODULE) ++ "_" ++ integer_to_list(rand:uniform(1000)),
     short_node_name(S).
 
 -spec start_standalone_node(Node, Cfg) -> Result
